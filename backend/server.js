@@ -30,7 +30,7 @@ mongoose.connection.on('disconnected', () => {
 });
 
 // Configure Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'AIzaSyB61iMqI7ecVBGwyW2iax_tcoPgQAuLXOI');
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY );
 
 // Middleware
 app.use(cors());
