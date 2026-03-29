@@ -1,0 +1,19 @@
+@echo off
+echo Starting AI Evaluation System...
+
+echo Installing backend dependencies...
+cd backend
+call npm install
+echo Starting backend server...
+start cmd /k "npm run dev"
+
+echo Installing frontend dependencies...
+cd ..\frontend
+call npm install
+echo Starting frontend server...
+start cmd /k "npm start"
+
+echo Both servers are starting...
+echo Backend: http://localhost:5000
+echo Frontend: http://localhost:3000
+pause

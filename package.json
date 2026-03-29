@@ -1,0 +1,13 @@
+{
+  "name": "ai-eval-app",
+  "version": "1.0.0",
+  "description": "AI Evaluation System with React frontend and Node.js backend",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm start\"",
+    "start": "cd backend && npm start"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
