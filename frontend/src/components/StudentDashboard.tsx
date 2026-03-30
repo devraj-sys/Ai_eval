@@ -46,7 +46,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout }) =
 
   const fetchPapers = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/approved-papers', axiosConfig);
+      const response = await axios.get('https://ai-eval-74ay.onrender.com/api/approved-papers', axiosConfig);
       setPapers(response.data.papers);
     } catch (error) {
       console.error('Error fetching papers:', error);
@@ -55,7 +55,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout }) =
 
   const fetchSubmissions = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/my-submissions', axiosConfig);
+      const response = await axios.get('https://ai-eval-74ay.onrender.com/api/my-submissions', axiosConfig);
       setSubmissions(response.data.submissions);
     } catch (error) {
       console.error('Error fetching submissions:', error);
@@ -76,7 +76,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout }) =
     formData.append('studentAnswer', file);
 
     try {
-      const response = await axios.post(`http://localhost:5000/api/submit-answer/${selectedPaper}`, formData, axiosConfig);
+      const response = await axios.post(`https://ai-eval-74ay.onrender.com/api/submit-answer/${selectedPaper}`, formData, axiosConfig);
       alert('Answer submitted successfully!');
       setFile(null);
       setSelectedPaper('');

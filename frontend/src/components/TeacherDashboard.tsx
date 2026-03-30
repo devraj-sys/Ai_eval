@@ -39,7 +39,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, onLogout }) =
 
   const fetchPapers = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/my-papers', axiosConfig);
+      const response = await axios.get('https://ai-eval-74ay.onrender.com/api/my-papers', axiosConfig);
       setPapers(response.data.papers);
     } catch (error) {
       console.error('Error fetching papers:', error);
@@ -55,7 +55,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, onLogout }) =
     formData.append('title', title);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/create-paper', formData, axiosConfig);
+      const response = await axios.post('https://ai-eval-74ay.onrender.com/api/create-paper', formData, axiosConfig);
       setPapers([...papers, response.data.paper]);
       setFile(null);
       setTitle('');
@@ -78,7 +78,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, onLogout }) =
   const saveAnswerKey = async () => {
     if (!selectedPaper) return;
     try {
-      await axios.put(`http://localhost:5000/api/update-paper/${selectedPaper._id}`, 
+      await axios.put(`https://ai-eval-74ay.onrender.com/api/update-paper/${selectedPaper._id}`, 
         { answerKey: selectedPaper.answerKey }, axiosConfig);
       fetchPapers();
       alert('Answer key saved successfully');
@@ -90,7 +90,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, onLogout }) =
 
   const approvePaper = async (paperId: string) => {
     try {
-      await axios.put(`http://localhost:5000/api/approve-paper/${paperId}`, {}, axiosConfig);
+      await axios.put(`https://ai-eval-74ay.onrender.com/api/approve-paper/${paperId}`, {}, axiosConfig);
       fetchPapers();
       alert('Paper approved successfully');
     } catch (error) {
@@ -102,7 +102,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, onLogout }) =
   const deletePaper = async (paperId: string) => {
     if (!window.confirm('Are you sure you want to delete this paper? This will also delete all student submissions.')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/delete-paper/${paperId}`, axiosConfig);
+      await axios.delete(`https://ai-eval-74ay.onrender.com/api/delete-paper/${paperId}`, axiosConfig);
       fetchPapers();
       alert('Paper deleted successfully');
     } catch (error) {
@@ -113,7 +113,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, onLogout }) =
 
   const viewResults = async (paperId: string, paperTitle: string) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/paper-results/${paperId}`, axiosConfig);
+      const response = await axios.get(`https://ai-eval-74ay.onrender.com/api/paper-results/${paperId}`, axiosConfig);
       const results = response.data;
       setResultsModal({
         isOpen: true,

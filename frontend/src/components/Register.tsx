@@ -18,7 +18,7 @@ const Register: React.FC<RegisterProps> = ({ onLogin, onToggleLogin }) => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/register', {
+      const response = await axios.post('https://ai-eval-74ay.onrender.com/api/register', {
         name,
         email,
         password,
