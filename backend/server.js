@@ -35,31 +35,32 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY );
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
-// Configure multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = 'uploads';
-    fs.ensureDirSync(uploadDir);
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
-
-const upload = multer({ storage });
-
-// Helper function
-function fileToGenerativePart(path, mimeType) {
-  return {
-    inlineData: {
-      data: Buffer.from(fs.readFileSync(path)).toString('base64'),
-      mimeType
+  // Configure multer
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const uploadDir = 'uploads';
+      fs.ensureDirSync(uploadDir);
+      cb(null, uploadDir);
     },
-  };
-}
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + '-' + file.originalname);
+    }
+  });
+
+  const upload = multer({ storage });
+
+  // Helper function
+  function fileToGenerativePart(path, mimeType) {
+    return {
+      inlineData: {
+        data: Buffer.from(fs.readFileSync(path)).toString('base64'),
+        mimeType
+      },
+    };
+  }
 
 // Auth Routes
 app.post('/api/register', async (req, res) => {
