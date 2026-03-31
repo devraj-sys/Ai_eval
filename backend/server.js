@@ -103,6 +103,11 @@ app.post('/api/create-paper', auth, upload.single('questionPaper'), async (req, 
     }
 
     const { title } = req.body;
+    console.log('✅ Route hit');
+    console.log('✅ Title:', title);
+    console.log('✅ File:', req.file);
+    console.log('✅ Gemini Key present:', !!process.env.GEMINI_API_KEY);
+
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     
     const prompt = `
@@ -114,10 +119,12 @@ Generate a JSON array with each object containing:
 Only output pure JSON (no explanations, no markdown).
     `;
 
+    console.log('✅ Calling Gemini...');
     const imagePart = fileToGenerativePart(req.file.path, 'application/pdf');
     const result = await model.generateContent([prompt, imagePart]);
     const response = await result.response;
     const text = response.text();
+    console.log('✅ Gemini response received');
 
     const jsonMatch = text.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
     const answerKey = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(text);
@@ -132,7 +139,13 @@ Only output pure JSON (no explanations, no markdown).
     await paper.save();
     res.json({ paper });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create paper' });
+    console.error('❌ Error:', error.message);
+    console.error('❌ Stack:', error.stack);
+    res.status(500).json({ 
+      error: 'Failed to create paper',
+      message: error.message,  // 👈 actual error
+      stack: error.stack        // 👈 where it happened
+    });
   }
 });
 
