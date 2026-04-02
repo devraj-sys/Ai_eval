@@ -174,12 +174,12 @@ app.post('/api/create-paper', auth, upload.single('questionPaper'), async (req, 
     if (req.user.role !== 'teacher') return res.status(403).json({ error: 'Access denied' });
 
     const { title, classId } = req.body;
+    const resolvedClassId = classId && classId.trim() !== '' ? classId.trim() : null;
 
-    // If classId provided, verify teacher owns that class
-    if (classId) {
-      const cls = await Class.findOne({ _id: classId, teacherId: req.user._id });
-      if (!cls) return res.status(403).json({ error: 'Class not found or access denied' });
-    }
+    if (!resolvedClassId) return res.status(400).json({ error: 'A class must be selected for the paper' });
+
+    const cls = await Class.findOne({ _id: resolvedClassId, teacherId: req.user._id });
+    if (!cls) return res.status(403).json({ error: 'Class not found or access denied' });
 
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     const prompt = `
@@ -200,13 +200,14 @@ Only output pure JSON (no explanations, no markdown).
     const paper = new Paper({
       title,
       teacherId: req.user._id,
-      classId: classId || null,
+      classId: resolvedClassId,
       questionPaperPath: req.file.path,
       answerKey
     });
 
     await paper.save();
-    res.json({ paper });
+    const populated = await Paper.findById(paper._id).populate('classId', 'name');
+    res.json({ paper: populated });
   } catch (error) {
     console.error('❌ Error:', error.message);
     res.status(500).json({ error: 'Failed to create paper', message: error.message });
@@ -247,10 +248,12 @@ app.put('/api/approve-paper/:id', auth, async (req, res) => {
 app.get('/api/my-papers', auth, async (req, res) => {
   try {
     if (req.user.role !== 'teacher') return res.status(403).json({ error: 'Access denied' });
-    const papers = await Paper.find({ teacherId: req.user._id }).populate('classId', 'name');
+    const papers = await Paper.find({ teacherId: req.user._id })
+      .populate({ path: 'classId', select: 'name', options: { strictPopulate: false } });
     res.json({ papers });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to get papers' });
+    console.error('my-papers error:', error.message);
+    res.status(500).json({ error: 'Failed to get papers', message: error.message });
   }
 });
 
