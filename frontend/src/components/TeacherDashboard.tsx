@@ -154,7 +154,12 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, onLogout, the
     try {
       const res = await axios.get(`https://ai-eval-74ay.onrender.com/api/paper-results/${paperId}`, axiosConfig);
       setResultsModal({ isOpen: true, paperTitle: res.data.paper, submissions: res.data.submissions });
-    } catch { toast.error('Failed to fetch results'); }
+    } catch (err: any) {
+      const status = err?.response?.status;
+      const msg = err?.response?.data?.error || err?.message || 'Failed to fetch results';
+      toast.error(`${status ? `[${status}] ` : ''}${msg}`);
+      console.error('viewResults error:', err?.response?.data);
+    }
   };
 
   const getClassStats = (classId: string) => {

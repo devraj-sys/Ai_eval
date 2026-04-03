@@ -36,8 +36,8 @@ const ResultsModal: React.FC<ResultsModalProps> = ({ isOpen, onClose, paperTitle
     const rows = [
       ['Student', 'Email', 'Score', 'Max', 'Percentage', 'Submitted'],
       ...sorted.map(s => [
-        s.studentId.name,
-        s.studentId.email,
+        s.studentId?.name || 'Unknown',
+        s.studentId?.email || 'Unknown',
         s.totalMarks,
         s.maxTotalMarks,
         `${s.percentage}%`,
@@ -112,8 +112,8 @@ const ResultsModal: React.FC<ResultsModalProps> = ({ isOpen, onClose, paperTitle
                   {sorted.map((s, i) => (
                     <tr key={i}>
                       <td style={{ color: 'var(--text-3)', fontSize: '0.8rem' }}>{i + 1}</td>
-                      <td style={{ fontWeight: 600 }}>{s.studentId.name}</td>
-                      <td style={{ color: 'var(--text-3)', fontSize: '0.8rem' }}>{s.studentId.email}</td>
+                      <td style={{ fontWeight: 600 }}>{s.studentId?.name || '—'}</td>
+                      <td style={{ color: 'var(--text-3)', fontSize: '0.8rem' }}>{s.studentId?.email || '—'}</td>
                       <td style={{ fontWeight: 700 }}>
                         {s.totalMarks}<span style={{ color: 'var(--text-3)', fontWeight: 400 }}>/{s.maxTotalMarks}</span>
                       </td>

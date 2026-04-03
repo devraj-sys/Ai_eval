@@ -276,11 +276,14 @@ app.get('/api/paper-results/:id', auth, async (req, res) => {
     const paper = await Paper.findOne({ _id: req.params.id, teacherId: req.user._id });
     if (!paper) return res.status(404).json({ error: 'Paper not found' });
     const submissions = await Submission.find({ paperId: req.params.id })
-      .populate('studentId', 'name email')
+      .populate({ path: 'studentId', select: 'name email', options: { strictPopulate: false } })
       .sort({ createdAt: -1 });
-    res.json({ paper: paper.title, submissions });
+    // Filter out any submissions where studentId failed to populate
+    const validSubmissions = submissions.filter(s => s.studentId);
+    res.json({ paper: paper.title, submissions: validSubmissions });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to get results' });
+    console.error('paper-results error:', error.message);
+    res.status(500).json({ error: 'Failed to get results', message: error.message });
   }
 });
 
