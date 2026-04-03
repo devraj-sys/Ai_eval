@@ -286,22 +286,17 @@ app.get('/api/paper-results/:id', auth, async (req, res) => {
 
 // ── Student Paper Routes ──────────────────────────────────────
 
-// Returns approved papers only for classes the student has joined (or global papers with no class)
+// Returns approved papers only for classes the student has joined
 app.get('/api/approved-papers', auth, async (req, res) => {
   try {
     if (req.user.role !== 'student') return res.status(403).json({ error: 'Access denied' });
 
-    // Get classes the student has joined
     const joinedClasses = await Class.find({ students: req.user._id }).select('_id');
     const joinedClassIds = joinedClasses.map(c => c._id);
 
-    // Papers that are approved AND (belong to a joined class OR have no class)
     const papers = await Paper.find({
       isApproved: true,
-      $or: [
-        { classId: null },
-        { classId: { $in: joinedClassIds } }
-      ]
+      classId: { $in: joinedClassIds }
     })
       .populate('teacherId', 'name')
       .populate('classId', 'name')
@@ -320,11 +315,10 @@ app.post('/api/submit-answer/:paperId', auth, upload.single('studentAnswer'), as
     const paper = await Paper.findOne({ _id: req.params.paperId, isApproved: true });
     if (!paper) return res.status(404).json({ error: 'Paper not found or not approved' });
 
-    // If paper belongs to a class, verify student is a member
-    if (paper.classId) {
-      const cls = await Class.findOne({ _id: paper.classId, students: req.user._id });
-      if (!cls) return res.status(403).json({ error: 'You are not a member of this class' });
-    }
+    // Verify student is a member of the paper's class
+    if (!paper.classId) return res.status(403).json({ error: 'This paper has no class assigned' });
+    const cls = await Class.findOne({ _id: paper.classId, students: req.user._id });
+    if (!cls) return res.status(403).json({ error: 'You are not a member of this class' });
 
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     const prompt = `
